@@ -1,0 +1,8 @@
+/.idea
+/node_modules/
+/package-lock.json
+/client/package-lock.json
+/build/
+/id_rsa_priv.pem
+/id_rsa_pub.pem
+/.env
