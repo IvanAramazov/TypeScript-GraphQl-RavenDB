@@ -8,11 +8,9 @@ export const UserUnionType = new GraphQLUnionType({
     name:"UserUnionType",
     types: [UserType, CustomErrorType],
     resolveType(value){
-        if (value instanceof User) {
-            return UserType;
-        }
         if (value instanceof CustomError) {
             return CustomErrorType;
         }
+        return UserType;
     }
 })

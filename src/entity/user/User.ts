@@ -5,6 +5,7 @@ export class User {
     email: string;
     password: string;
     confirmed: boolean;
+    userInfoId: string;
 
     constructor(email: string, password: string) {
         this.email = email;
