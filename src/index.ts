@@ -30,7 +30,7 @@ passportInit(passport);
 
 const cors = {
     credentials: true,
-    origin: true //front end server
+    origin: "http://localhost:3000" //front end server
 }
 
 export const startServer = async () => {
@@ -55,6 +55,11 @@ export const startServer = async () => {
     server.express.use(passport.initialize());
     server.express.use(passport.session());
     server.express.use(cookieParser());
+    server.express.use(function(req, res, next) {
+        res.header("Access-Control-Allow-Origin", "http://localhost:3000" ); // update to match the domain you will make the request from
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        next();
+    });
 
     server.express.post('/login', async(req: Request, res: Response, next) =>{
         if(!emailRegEx.test(req.body.email)){
@@ -65,7 +70,7 @@ export const startServer = async () => {
             res.status(401).json(new CustomError(USER_ERROR, USER_DOES_NOT_EXIST))
         }
         const jwt = issueJwt(user);
-        res.cookie('token', jwt.token, { httpOnly: false });
+        res.cookie('token', jwt.token, { httpOnly: true });
         res.header( "Access-Control-Allow-Origin" );
         res.send({
             id: user.id,
@@ -102,7 +107,7 @@ export const startServer = async () => {
         }
 
         const jwt = issueJwt(newUser);
-        res.cookie('token', jwt.token, { httpOnly: false });
+        res.cookie('token', jwt.token, { httpOnly: true });
         res.header( "Access-Control-Allow-Origin" );
         res.send({
             id: newUser.id,
