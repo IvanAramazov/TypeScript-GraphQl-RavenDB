@@ -1,20 +1,43 @@
-import {GraphQLObjectType, GraphQLString} from "graphql";
+import {GraphQLNonNull, GraphQLObjectType, GraphQLString} from "graphql";
 import {User} from "../../entity/user/User";
 import {UserUnionType} from "../types/UnionType";
 import {CustomError} from "../../entity/Error";
+import {ChatListType, ChatType} from "../types/ChatType";
+import {documentStore} from "../../constants";
+import {Chat} from "../../entity/chat/chat";
 
 export const RootQuery = new GraphQLObjectType({
-    name: 'RootQueryType',
+    name: 'Query',
     fields: {
         user: {
             type: UserUnionType,
-            args: {id: {type: GraphQLString}},
+            args: {
+                id: {type: new GraphQLNonNull(GraphQLString)}
+            },
             async resolve(parentValue, args) {
                 const user = await User.findUserByID(args.id);
-                if(!user){
-                    return new CustomError("USER_ERROR","User not found")
+                if (!user) {
+                    return new CustomError("USER_ERROR", "User not found")
                 }
                 return user;
+            }
+        },
+        openChat: {
+            type: ChatListType,
+            args: {
+                chatId: {type: new GraphQLNonNull(GraphQLString)},
+            },
+            async resolve(parentValue, args){
+                return await documentStore.openSession().query(Chat).whereEquals("id",args.chatId).firstOrNull();
+            }
+        },
+        chatsByUser:{
+            type: ChatType,
+            args: {
+                userId: {type: new GraphQLNonNull(GraphQLString)},
+            },
+            async resolve(parentValue, args){
+                return await documentStore.openSession().query(Chat).containsAny("usersIds", args.userId).all();
             }
         }
     }

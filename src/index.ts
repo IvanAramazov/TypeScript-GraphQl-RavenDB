@@ -3,7 +3,7 @@ dotenv.config();
 
 import "reflect-metadata";
 import * as Redis from "ioredis";
-import {GraphQLServer} from "graphql-yoga";
+import {GraphQLServer, PubSub} from "graphql-yoga";
 import * as bodyParser from "body-parser";
 import {mySchema} from "./schema";
 import * as passport from "passport";
@@ -26,6 +26,8 @@ import cookieParser = require("cookie-parser");
 import {User} from "./entity/user/User";
 import * as bcrypt from "bcrypt";
 import * as path from "path";
+import { WebSocketServer } from 'ws';
+import {useServer} from "graphql-ws/lib/use/ws";
 passportInit(passport);
 
 const cors = {
@@ -37,15 +39,17 @@ export const startServer = async () => {
     documentStore.initialize()
     const session = documentStore.openSession();
     const redis = new Redis();
+    const pubsub = new PubSub();
 
     const server = new GraphQLServer({
         schema: mySchema,
         context: ({request}) => ({
             redis,
-            url: request.protocol + "://" + request.get("host"),
-            session: request.session,
+            url: request ? request.protocol + "://" + request.get("host") : '',
+            session: request ? request.session : undefined,
             req: request,
-            headers: request.headers,
+            headers: request ? request.headers: undefined,
+            pubsub
         })
     });
 
@@ -112,6 +116,8 @@ export const startServer = async () => {
     })
 
     server.express.post('/graphql', passport.authenticate('jwt',{session:false}),(req: Request, res: Response, next) => { next();})
+
+    //TODO Add Auth to web socket
 
     const app = await server.start({
         endpoint: "/graphql",
