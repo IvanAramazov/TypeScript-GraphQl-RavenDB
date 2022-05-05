@@ -52,7 +52,7 @@
       "uuid": "^3.3.3"
    },
    "scripts": {
-      "start": "nodemon src/index.ts",
+      "start": "nodemon src/index.ts --ignore client",
       "genKeyPair": "node generateKeypair.js"
    }
 }

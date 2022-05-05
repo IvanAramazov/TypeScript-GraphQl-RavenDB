@@ -1,11 +1,12 @@
 import {documentStore} from "../../constants";
+import {UserInfo} from "./UserInfo";
 
 export class User {
     id: string;
     email: string;
     password: string;
     confirmed: boolean;
-    userInfoId: string;
+    info: UserInfo;
 
     constructor(email: string, password: string) {
         this.email = email;
