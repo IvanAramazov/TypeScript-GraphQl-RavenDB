@@ -4,7 +4,7 @@ import {UserUnionType} from "../types/UnionType";
 import {CustomError} from "../../entity/Error";
 import {ChatListType, ChatType} from "../types/ChatType";
 import {documentStore} from "../../constants";
-import {Chat} from "../../entity/chat/chat";
+import {Chat, Chatlist} from "../../entity/chat/chat";
 
 export const RootQuery = new GraphQLObjectType({
     name: 'Query',
@@ -23,7 +23,7 @@ export const RootQuery = new GraphQLObjectType({
             }
         },
         openChat: {
-            type: ChatListType,
+            type: ChatType,
             args: {
                 chatId: {type: new GraphQLNonNull(GraphQLString)},
             },
@@ -32,12 +32,12 @@ export const RootQuery = new GraphQLObjectType({
             }
         },
         chatsByUser:{
-            type: ChatType,
+            type: ChatListType,
             args: {
                 userId: {type: new GraphQLNonNull(GraphQLString)},
             },
             async resolve(parentValue, args){
-                return await documentStore.openSession().query(Chat).containsAny("usersIds", args.userId).all();
+                return new Chatlist(await documentStore.openSession().query(Chat).containsAny("usersIds", [args.userId]).all());
             }
         }
     }

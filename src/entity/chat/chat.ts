@@ -12,3 +12,12 @@ export class Chat {
         this.history = [];
     }
 }
+
+export class Chatlist {
+    chatList: Chat[] = []
+
+    constructor(chatList: Chat[]) {
+        this.chatList = chatList;
+    }
+
+}
