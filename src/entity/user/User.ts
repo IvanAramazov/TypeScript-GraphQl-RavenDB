@@ -11,6 +11,7 @@ export class User {
     constructor(email: string, password: string) {
         this.email = email;
         this.password = password;
+        this.info = new UserInfo();
     }
 
     public static async findUserByID(userId:string){

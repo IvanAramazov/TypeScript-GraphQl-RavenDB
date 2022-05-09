@@ -14,7 +14,8 @@ export const ChatType = new GraphQLObjectType({
 export const MessageType = new GraphQLObjectType({
     name: 'Message',
     fields: () => ({
-        user: {type: UserType},
+        userId: {type: GraphQLString},
+        user: {type: GraphQLString},
         content: {type: GraphQLString},
         timestamp: {type: DateScalarType}
     })

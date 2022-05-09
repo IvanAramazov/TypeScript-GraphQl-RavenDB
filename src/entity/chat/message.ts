@@ -1,12 +1,14 @@
 import {User} from "../user/User";
 
 export class Message {
-    user: User;
+    userId: string;
+    user: string;
     content: string;
     timestamp: Date;
 
     constructor(user: User, content: string, timestamp: Date) {
-        this.user = user;
+        this.userId = user.id;
+        this.user = user.info.displayName;
         this.content = content;
         this.timestamp = timestamp;
     }

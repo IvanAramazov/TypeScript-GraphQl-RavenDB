@@ -5,7 +5,7 @@ import {documentStore} from "../../constants";
 import {User} from "../../entity/user/User";
 import {ChatType} from "../types/ChatType";
 import {Chat} from "../../entity/chat/chat";
-import {Message} from "../../entity/chat/message";
+import {sendMessageResolver} from "../resolvers/chat/sendMessageResolver";
 
 export const RootMutation = new GraphQLObjectType({
     name:'Mutation',
@@ -68,19 +68,7 @@ export const RootMutation = new GraphQLObjectType({
                 content: {type: new GraphQLNonNull(GraphQLString)},
             },
             async resolve(parentValue,args, {pubsub}){
-                const user = await User.findUserByID(args.userId);
-
-                const session = documentStore.openSession();
-                const chat: Chat = await session.load(args.chatId);
-                const message = new Message(user,args.content, new Date())
-
-                chat.history.length === 0 ? chat.history = [message] : chat.history.push(message);
-
-                await session.saveChanges();
-                if(pubsub){
-                    await pubsub.publish("NEW_MESSAGE", {newMessage: message});
-                }
-                return chat;
+                return await sendMessageResolver(args, pubsub);
             }
         }
     }
