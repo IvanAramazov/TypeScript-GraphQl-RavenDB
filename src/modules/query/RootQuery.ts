@@ -37,7 +37,7 @@ export const RootQuery = new GraphQLObjectType({
                 userId: {type: new GraphQLNonNull(GraphQLString)},
             },
             async resolve(parentValue, args){
-                return new Chatlist(await documentStore.openSession().query(Chat).containsAny("usersIds", [args.userId]).all());
+                return new Chatlist(await documentStore.openSession().query(Chat).containsAny("usersIds", args.userId).all());
             }
         }
     }
